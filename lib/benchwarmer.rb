@@ -84,6 +84,7 @@ module Benchmark
     end
     
     def titles(titles)
+      @columns ||= Dictionary.new
       @columns.merge!(titles)
     end
     
@@ -95,13 +96,13 @@ module Benchmark
     end
     
     def report(str, &blk)
-      @groups ||= Dictionary.new
+      @groups ||= Dictionary.new {|h,k| h[k] = Dictionary.new}
       if !@columns || @columns.size == 1
-        @groups[@current_group || "default"][str] = [blk]
+        @groups[@current_group || ""][str] = [blk]
       else
         report = GroupReport.new(@columns.keys)
         report.instance_eval(&blk)
-        @groups[@current_group || "default"][str] = report.runs
+        @groups[@current_group || ""][str] = report.runs
       end
     end
     
