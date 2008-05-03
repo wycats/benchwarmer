@@ -1,4 +1,96 @@
-templates
-=================
+# benchwarmer
+# ===========
+#
+# A gem that provides a nice DSL for a common type of benchmark.
+#
+# Specifically:
 
-A plugin for the Merb framework that provides ....
+  require "rubygems"
+  require "benchwarmer"
+  
+  TIMES = 100_000
+  
+  Benchmark.warmer(TIMES) do                              # [1]
+    columns :one, :two, :three                            # [2]
+    titles :one => "Option 1", :three => "Option 3"       # [3]
+    
+    group("Squeezing") do                                 # [4]
+      report "with #squeeze" do                           # [5]
+        one { "abc//def//ghi//jkl".squeeze("/") }         # [6]
+        two { "abc///def///ghi///jkl".squeeze("/") }
+        three { "abc////def////ghi////jkl".squeeze("/") }
+      end
+      report "with #gsub" do
+        one { "abc//def//ghi//jkl".gsub(/\/+/, "/") }
+        two { "abc///def///ghi///jkl".gsub(/\/+/, "/") }
+        three { "abc////def////ghi////jkl".gsub(/\/+/, "/") }
+      end
+    end
+    
+    group("Spliting") do
+      report "with #split" do
+        one { "aaa/aaa/aaa.bbb.ccc.ddd".split(".") }
+        two { "aaa//aaa//aaa.bbb.ccc.ddd.eee".split(".") }
+        three { "aaa///aaa///aaa.bbb.ccc.ddd.eee.fff".split(".") }
+      end
+      report "with #match" do
+        one { "aaa/aaa/aaa.bbb.ccc.ddd".match(/\.([^\.]*)$/) }
+        two { "aaa//aaa//aaa.bbb.ccc.ddd.eee".match(/\.([^\.]*)$/) }
+        three { "aaa///aaa///aaa.bbb.ccc.ddd.eee.fff".match(/\.([^\.]*)$/) }
+      end
+    end
+  end
+  
+  # [1] Specify the number of times you want to run each benchmark
+  # [2] Specify the column names. By default, they will be displayed as upcased
+  #     versions of themselves.
+  # [3] Specify prettier titles via a Hash. You do *not* need to specify the 
+  #     same column in both columns and titles.
+  # [4] Specify a group of benchmarks you wish to run
+  # [5] Specify the name of the report you wish to run
+  # [6] Optionally, specify several different variants of the benchmark. This could
+  #     be useful if you're testing a new alorithm, and wish to compare a bunch of
+  #     benchmarks against each algorithms. In most cases, you will probably want to
+  #     use the variant below, which does not require columns.
+  
+  # Output:
+  # Running the benchmarks 100000 times each...
+  # 
+  #                         Option 1 |   TWO | Option 3 |
+  # -----------------------------------------------------
+  # Squeezing with #squeeze     0.15 |  0.15 |     0.14 |
+  #              with #gsub     0.38 |  0.35 |     0.36 |
+  # -----------------------------------------------------
+  # Spliting    with #split     0.43 |  0.51 |     0.61 |
+  #             with #match     0.29 |  0.35 |     0.38 |
+  # -----------------------------------------------------  
+
+  Benchmark.warmer(TIMES) do                             
+    group("Squeezing") do                                
+      report "with #squeeze" do                          
+        "abc//def//ghi//jkl".squeeze("/")
+      end
+      report "with #gsub" do
+        "abc//def//ghi//jkl".gsub(/\/+/, "/")
+      end
+    end
+    
+    group("Spliting") do
+      report "with #split" do
+        "aaa/aaa/aaa.bbb.ccc.ddd".split(".")
+      end
+      report "with #match" do
+        "aaa/aaa/aaa.bbb.ccc.ddd".match(/\.([^\.]*)$/)
+      end
+    end
+  end
+
+  #                         Results |
+  # ---------------------------------
+  # Squeezing with #squeeze    0.15 |
+  #              with #gsub    0.37 |
+  # ---------------------------------
+  # Spliting    with #split    0.43 |
+  #             with #match    0.29 |
+  # ---------------------------------
+  

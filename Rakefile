@@ -1,12 +1,12 @@
 require 'rubygems'
 require 'rake/gempackagetask'
 
-GEM = "new_gem"
-VERSION = "0.0.1"
-AUTHOR = "Your Name"
-EMAIL = "Your Email"
-HOMEPAGE = "http://example.com"
-SUMMARY = "A gem that provides..."
+GEM = "benchwarmer"
+VERSION = "0.5"
+AUTHOR = "Yehuda Katz"
+EMAIL = "wycats@gmail.com"
+HOMEPAGE = "http://yehudakatz.com"
+SUMMARY = "A gem that provides a prettier formatting and DSL for Ruby benchmarks"
 
 spec = Gem::Specification.new do |s|
   s.name = GEM
