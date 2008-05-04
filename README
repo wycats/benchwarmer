@@ -85,6 +85,9 @@
     end
   end
 
+  # Output:
+  # Running the benchmarks 100000 times each...
+  #
   #                         Results |
   # ---------------------------------
   # Squeezing with #squeeze    0.15 |
@@ -93,4 +96,23 @@
   # Spliting    with #split    0.43 |
   #             with #match    0.29 |
   # ---------------------------------
+  
+  Benchmark.warmer(TIMES) do
+    report "squeezing with #squeeze" do
+      "abc//def//ghi//jkl".squeeze("/")
+    end
+    report "squeezing with #gsub" do
+      "abc//def//ghi//jkl".gsub(/\/+/, "/")
+    end
+  end
+  
+  # Output:
+  # Running the benchmarks 100000 times each...
+  # 
+  #                          Results |
+  # ----------------------------------
+  #  squeezing with #squeeze    0.15 |
+  #     squeezing with #gsub    0.34 |
+  # ----------------------------------
+  
   
