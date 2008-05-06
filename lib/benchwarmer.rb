@@ -67,7 +67,7 @@ module Benchmark
           procs.each_with_index do |(column, proc), i|
             head = @columns[column]
             bench = Benchmark.measure { @times.times(&proc)}
-            print (" %#{head.size >= 5 ? head.size : 5}.2f |" % bench.real)
+            print (" %#{[head.size, 5].max}.2f |" % bench.real)
           end
           puts
         end
