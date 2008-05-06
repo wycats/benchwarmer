@@ -64,8 +64,8 @@ module Benchmark
           print "%#{@group_max}s" % name
           
           # Actually run the benchmarks
-          procs.each_with_index do |proc, i|
-            head = @columns[@columns.order[i]]
+          procs.each_with_index do |(column, proc), i|
+            head = @columns[column]
             bench = Benchmark.measure { @times.times(&proc)}
             print (" %#{head.size >= 5 ? head.size : 5}.2f |" % bench.real)
           end
@@ -98,7 +98,7 @@ module Benchmark
     def report(str, &blk)
       @groups ||= Dictionary.new {|h,k| h[k] = Dictionary.new}
       if !@columns || @columns.size == 1
-        @groups[@current_group || ""][str] = [blk]
+        @groups[@current_group || ""][str] = {(@columns && @columns.order[0]) || :results => blk}
       else
         report = GroupReport.new(@columns.keys)
         report.instance_eval(&blk)
@@ -120,8 +120,8 @@ module Benchmark
       cols.each do |col|
         new_self.class_eval <<-RUBY
           def #{col}(&blk)
-            @runs ||= []
-            @runs << blk
+            @runs ||= {}
+            @runs[#{col.to_sym.inspect}] = blk
           end
         RUBY
       end
